@@ -62,7 +62,7 @@ class Game:
                     self.cursor_timer = pg.time.get_ticks()
 
             # Render background and components
-            self.window.blit(self.bg_img, (0, -2050))
+            self.window.blit(self.bg_img, (0, -2000))
 
             # Draw problem text and input box
             self.problem_box.display_problem(self.problem_letters)  # Display the problem
