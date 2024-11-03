@@ -47,16 +47,22 @@ class Game:
                 if event.type == pg.KEYDOWN:
                     if self.active:
                         if event.key == pg.K_RETURN:
-                            print("User Input:", self.input_box.text)
-                            check_text(self.problem_letters, self.input_box.text)
+                            user_input = self.input_box.text
+                            print("User Input:", user_input)
+                            
+                            # ตรวจสอบว่าคำตอบถูกต้องหรือไม่
+                            is_correct = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
                             
-                            # เลื่อนภาพพื้นหลังหลังการตอบคำถาม
-                            if self.background.move_up():
-                                print("Game Over: Background reached the top!")
-                                pg.quit()
-                                sys.exit()
+                            # ถ้าคำตอบถูกต้องให้เลื่อนพื้นหลัง
+                            if is_correct:
+                                if self.background.move_up(len(user_input)):
+                                    print("Game Over: Background reached the top!")
+                                    pg.quit()
+                                    sys.exit()
+                            else:
+                                print("Incorrect Answer: Background will not move.")
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
