@@ -6,11 +6,13 @@ class Background:
         self.game_instance = game_instance
         self.bg_img = pg.image.load(r"assets/bg.jpg")  # โหลดภาพพื้นหลัง
         self.bg_y = self.game_instance.height - self.bg_img.get_height()  # เริ่มต้นที่ล่างสุด
-        self.move_step = 100  # จำนวนพิกเซลที่จะเลื่อนขึ้นในแต่ละครั้ง
+        self.pixel_per_char = 20  # จำนวนพิกเซลที่เลื่อนขึ้นต่อ 1 ตัวอักษร
 
-    def move_up(self):
-        # เลื่อนพื้นหลังขึ้น 50 px
-        self.bg_y += self.move_step
+    def move_up(self, char_count):
+        # คำนวณพิกเซลที่จะเลื่อนขึ้น
+        move_distance = char_count * self.pixel_per_char
+        self.bg_y += move_distance
+        
         # หยุดการเลื่อนถ้าถึงขอบบนสุด
         if self.bg_y >= 0:
             self.bg_y = 0
