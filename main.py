@@ -62,8 +62,10 @@ class Game:
                             if correct_letters is not None:
                                 self.box_stack.add_boxes(len(correct_letters))
                                 self.background.move_up(len(correct_letters))  # Set target scroll position
+                                self.box_stack.move_down(50)
                             else:
                                 print("Incorrect Answer: Background will not move.")
+                                self.box_stack.move_down(50)
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]

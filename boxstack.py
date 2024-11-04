@@ -13,6 +13,13 @@ class BoxStack:
         self.box_width = self.box_img.get_width()
         self.box_height = self.box_img.get_height()
         self.stack_positions = []  # ตำแหน่งของกล่องแต่ละใบในสแตก
+        
+    def move_down(self, distance=50):
+        """
+        เลื่อนกล่องทั้งหมดลงตามระยะทางที่กำหนด (เริ่มต้นที่ 50 px)
+        """
+        for i in range(len(self.stack_positions)):
+            self.stack_positions[i] += distance  # เลื่อนแต่ละกล่องลงตามระยะทางที่กำหนด
 
     def add_boxes(self, count):
         """
@@ -25,7 +32,7 @@ class BoxStack:
         for _ in range(count):
             if not self.stack_positions:
                 # วางกล่องชุดแรกที่ด้านล่างของหน้าจอ
-                new_y = self.game_instance.height - self.box_height
+                new_y = self.game_instance.height - self.box_height - 150
             else:
                 # วางกล่องชุดถัดไปต่อจากด้านบนของกล่องด้านบนสุดในสแตก
                 new_y = self.stack_positions[0] - self.box_height
