@@ -14,7 +14,7 @@ class problemBox:
         self.window = game_instance.window
         
         # Load and scale the background image for the problem text
-        self.bg_image = pg.image.load(r"assets\letters\textBox.png")
+        self.bg_image = pg.image.load("assets/letters/textBox.png")
         self.bg_image = pg.transform.scale(self.bg_image, (550, 80))  # Adjust size as needed
 
     def random_problem(self):

@@ -4,7 +4,7 @@ import pygame as pg
 class Background:
     def __init__(self, game_instance):
         self.game_instance = game_instance
-        self.bg_img = pg.image.load(r"assets/bg.jpg")  # โหลดภาพพื้นหลัง
+        self.bg_img = pg.image.load(r"./assets/bg.jpg")  # โหลดภาพพื้นหลัง
         self.bg_y = self.game_instance.height - self.bg_img.get_height()  # เริ่มต้นที่ล่างสุด
         self.pixel_per_char = 20  # จำนวนพิกเซลที่เลื่อนขึ้นต่อ 1 ตัวอักษร
 
