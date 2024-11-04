@@ -3,7 +3,8 @@ import pygame as pg
 import sys
 from inputbox import inputBox
 from problem import problemBox, check_text
-from background import Background  # Import Background class
+from background import Background
+from boxstack import BoxStack  # Import BoxStack class
 
 # Colors
 WHITE = (255, 255, 255)
@@ -19,7 +20,8 @@ class Game:
         # Initialize components
         self.input_box = inputBox(self)
         self.problem_box = problemBox(self)
-        self.background = Background(self)  # Initialize Background instance
+        self.background = Background(self)
+        self.box_stack = BoxStack(self)  # Initialize BoxStack instance
 
         self.active = self.input_box.active
         self.text = ''
@@ -50,14 +52,17 @@ class Game:
                             user_input = self.input_box.text
                             print("User Input:", user_input)
                             
-                            # ตรวจสอบว่าคำตอบถูกต้องหรือไม่
-                            is_correct = check_text(self.problem_letters, user_input)
+                            # รับรายการตัวอักษรเมื่อคำตอบถูกต้อง
+                            correct_letters = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
                             
-                            # ถ้าคำตอบถูกต้องให้เลื่อนพื้นหลัง
-                            if is_correct:
-                                if self.background.move_up(len(user_input)):
+                            # ถ้าคำตอบถูกต้องให้เลื่อนพื้นหลังและเพิ่มกล่อง
+                            if correct_letters is not None:
+                                # ใช้ len() ของ correct_letters เพื่อเพิ่มกล่องและเลื่อนพื้นหลัง
+                                self.box_stack.add_boxes(len(correct_letters))  # เพิ่มกล่องตามจำนวนตัวอักษรที่ถูกต้อง
+                                
+                                if self.background.move_up(len(correct_letters)):
                                     print("Game Over: Background reached the top!")
                                     pg.quit()
                                     sys.exit()
@@ -77,6 +82,7 @@ class Game:
 
             # Render background and components
             self.background.draw()  # วาดภาพพื้นหลัง
+            self.box_stack.draw()   # วาดกล่องในสแตก
             self.problem_box.display_problem(self.problem_letters)  # Display problem
             if self.input_box_visible:
                 self.input_box.draw_input_box()

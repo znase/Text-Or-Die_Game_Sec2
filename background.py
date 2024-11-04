@@ -9,7 +9,7 @@ class Background:
         self.pixel_per_char = 20  # จำนวนพิกเซลที่เลื่อนขึ้นต่อ 1 ตัวอักษร
 
     def move_up(self, char_count):
-        # คำนวณพิกเซลที่จะเลื่อนขึ้น
+        # คำนวณพิกเซลที่จะเลื่อนขึ้นตามจำนวนตัวอักษร
         move_distance = char_count * self.pixel_per_char
         self.bg_y += move_distance
         
