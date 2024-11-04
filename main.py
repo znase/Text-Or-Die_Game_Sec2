@@ -3,7 +3,8 @@ import pygame as pg
 import sys
 from inputbox import inputBox
 from problem import problemBox, check_text
-from background import Background  # Import Background class
+from background import Background
+from boxstack import BoxStack
 
 # Colors
 WHITE = (255, 255, 255)
@@ -19,7 +20,8 @@ class Game:
         # Initialize components
         self.input_box = inputBox(self)
         self.problem_box = problemBox(self)
-        self.background = Background(self)  # Initialize Background instance
+        self.background = Background(self)
+        self.box_stack = BoxStack(self)
 
         self.active = self.input_box.active
         self.text = ''
@@ -31,6 +33,8 @@ class Game:
         self.game_loop()
 
     def game_loop(self):
+        clock = pg.time.Clock()
+        
         while True:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -50,19 +54,18 @@ class Game:
                             user_input = self.input_box.text
                             print("User Input:", user_input)
                             
-                            # ตรวจสอบว่าคำตอบถูกต้องหรือไม่
-                            is_correct = check_text(self.problem_letters, user_input)
+                            correct_letters = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
                             
-                            # ถ้าคำตอบถูกต้องให้เลื่อนพื้นหลัง
-                            if is_correct:
-                                if self.background.move_up(len(user_input)):
-                                    print("Game Over: Background reached the top!")
-                                    pg.quit()
-                                    sys.exit()
+                            # If answer is correct, set target scroll position
+                            if correct_letters is not None:
+                                self.box_stack.add_boxes(len(correct_letters))
+                                self.background.move_up(len(correct_letters))  # Set target scroll position
+                                self.box_stack.move_down(50)
                             else:
                                 print("Incorrect Answer: Background will not move.")
+                                self.box_stack.move_down(50)
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
@@ -75,15 +78,22 @@ class Game:
                     self.cursor_visible = not self.cursor_visible
                     self.cursor_timer = pg.time.get_ticks()
 
-            # Render background and components
-            self.background.draw()  # วาดภาพพื้นหลัง
-            self.problem_box.display_problem(self.problem_letters)  # Display problem
+            # Update and render
+            if self.background.update():  # Gradually scroll the background
+                print("Game Over: Background reached the top!")
+                pg.quit()
+                sys.exit()
+
+            self.background.draw()
+            self.box_stack.draw()
+            self.problem_box.display_problem(self.problem_letters)
             if self.input_box_visible:
                 self.input_box.draw_input_box()
                 if self.cursor_visible and self.active:
                     self.input_box.draw_cursor()
 
             pg.display.update()
+            clock.tick(60)  # Limit FPS to make scrolling smooth
 
 # Start the game
 if __name__ == "__main__":

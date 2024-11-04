@@ -41,8 +41,8 @@ def check_text(problem, text):
     if match and match[1] == 100.00 and all(letter in text for letter in problem):
         print("Correct")
         score = len(text)  # Increment score based on the length of the text
-        return True
+        return list(text)
     else:
         print("Incorrect")
         score = 0
-        return False
+        return None
