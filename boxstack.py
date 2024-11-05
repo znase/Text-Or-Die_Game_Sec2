@@ -12,7 +12,7 @@ class BoxStack:
         self.stack_positions = []  # ตำแหน่งของกล่องแต่ละใบในสแตก
 
         # โหลดภาพตัวละครและปรับขนาด
-        self.original_character_img = pg.image.load(r"assets/character.png")
+        self.original_character_img = pg.image.load(r"assets/char.png")
         self.character_img = pg.transform.scale(self.original_character_img, 
                                                 (self.original_character_img.get_width() // 2, 
                                                  self.original_character_img.get_height() // 2))  
@@ -40,4 +40,4 @@ class BoxStack:
         if self.stack_positions:
             character_x = x_center
             character_y = self.stack_positions[0] + self.character_y_offset
-            self.game_instance.window.blit(self.character_img, (character_x - 30, character_y))
+            self.game_instance.window.blit(self.character_img, (character_x - 10, character_y + 5))
