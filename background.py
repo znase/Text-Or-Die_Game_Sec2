@@ -4,15 +4,9 @@ import pygame as pg
 class Background:
     def __init__(self, game_instance):
         self.game_instance = game_instance
-<<<<<<< HEAD
         self.bg_img = pg.image.load(r"assets/bg.jpg")  # Load background image
         self.bg_y = self.game_instance.height - self.bg_img.get_height()  # Start at the bottom
         self.pixel_per_char = 20  # Pixels to move up per character
-=======
-        self.bg_img = pg.image.load(r"assets/bg.jpg")
-        self.bg_y = self.game_instance.height - self.bg_img.get_height()
-        self.pixel_per_char = 20
->>>>>>> origin/main
         self.target_y = self.bg_y  # Target position for the background
 
     def move_up(self, char_count):
