@@ -55,10 +55,12 @@ class Game:
                         if event.key == pg.K_RETURN:
                             user_input = self.input_box.text
                             print("User Input:", user_input)
-                            
+        
+                            # ตรวจสอบคำตอบของผู้ใช้
                             correct_letters = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
+<<<<<<< HEAD
                             
                             # If answer is correct, raise water level and move boxes
                             if correct_letters is not None:
@@ -66,9 +68,23 @@ class Game:
                                 self.background.move_up(len(correct_letters))
                                 self.box_stack.move_down(50)
                                 self.water.add_water()  # Incrementally raise the water level
+=======
+                        
+                            if correct_letters is not None:
+                                self.box_stack.add_boxes(len(correct_letters))
+                                self.background.move_up(len(correct_letters))
+    
+                                # เพิ่มตัวอักษรของคำตอบที่ถูกต้องใหม่ลงในกล่อง
+                                self.box_stack.add_letters(correct_letters)
+                                
+                                # เลื่อนกล่องลง
+                                self.box_stack.move_down(80)
+
+>>>>>>> origin/main
                             else:
                                 print("Incorrect Answer: Background will not move.")
-                                self.box_stack.move_down(50)
+                                self.box_stack.move_down(80)
+
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
