@@ -4,16 +4,10 @@ import pygame as pg
 class Background:
     def __init__(self, game_instance):
         self.game_instance = game_instance
-<<<<<<< HEAD
-        self.bg_img = pg.image.load(r"./assets/bg.jpg")  # โหลดภาพพื้นหลัง
-        self.bg_y = self.game_instance.height - self.bg_img.get_height()  # เริ่มต้นที่ล่างสุด
-        self.pixel_per_char = 20  # จำนวนพิกเซลที่เลื่อนขึ้นต่อ 1 ตัวอักษร
-=======
-        self.bg_img = pg.image.load(r"assets/bg.jpg")
-        self.bg_y = self.game_instance.height - self.bg_img.get_height()
-        self.pixel_per_char = 20
+        self.bg_img = pg.image.load(r"assets/bg.jpg")  # Load background image
+        self.bg_y = self.game_instance.height - self.bg_img.get_height()  # Start at the bottom
+        self.pixel_per_char = 20  # Pixels to move up per character
         self.target_y = self.bg_y  # Target position for the background
->>>>>>> 149711e4a38f9dc2b1b0420604e82958e8aa0518
 
     def move_up(self, char_count):
         """Set a new target position based on the number of correct characters."""
@@ -23,7 +17,7 @@ class Background:
     def update(self):
         """Gradually move the background towards the target position."""
         if self.bg_y < self.target_y:
-            self.bg_y += 1.5  # Adjust this value for slower or faster scrolling
+            self.bg_y += 1.5  # Adjust this for slower or faster scrolling
 
         # Stop scrolling if the background reaches the top
         if self.bg_y >= 0:

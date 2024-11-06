@@ -5,6 +5,7 @@ from inputbox import inputBox
 from problem import problemBox, check_text
 from background import Background
 from boxstack import BoxStack
+from moving_water import Water  # Import the Water class
 
 # Colors
 WHITE = (255, 255, 255)
@@ -22,6 +23,7 @@ class Game:
         self.problem_box = problemBox(self)
         self.background = Background(self)
         self.box_stack = BoxStack(self)
+        self.water = Water(self)  # Initialize water object
 
         self.active = self.input_box.active
         self.text = ''
@@ -58,11 +60,12 @@ class Game:
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
                             
-                            # If answer is correct, set target scroll position
+                            # If answer is correct, raise water level and move boxes
                             if correct_letters is not None:
                                 self.box_stack.add_boxes(len(correct_letters))
-                                self.background.move_up(len(correct_letters))  # Set target scroll position
+                                self.background.move_up(len(correct_letters))
                                 self.box_stack.move_down(50)
+                                self.water.add_water()  # Incrementally raise the water level
                             else:
                                 print("Incorrect Answer: Background will not move.")
                                 self.box_stack.move_down(50)
@@ -84,8 +87,10 @@ class Game:
                 pg.quit()
                 sys.exit()
 
+            # Draw everything
             self.background.draw()
             self.box_stack.draw()
+            self.water.draw()  # Draw the rising water
             self.problem_box.display_problem(self.problem_letters)
             if self.input_box_visible:
                 self.input_box.draw_input_box()
