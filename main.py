@@ -5,6 +5,7 @@ from inputbox import inputBox
 from problem import problemBox, check_text
 from background import Background
 from boxstack import BoxStack
+from moving_water import Water  # Import the Water class
 from win import Win  # Import the Win class
 
 # Colors
@@ -23,6 +24,7 @@ class Game:
         self.problem_box = problemBox(self)
         self.background = Background(self)
         self.box_stack = BoxStack(self)
+        self.water = Water(self)  # Initialize water object
         self.win = Win(self)  # Initialize the Win class
 
         self.active = self.input_box.active
@@ -65,7 +67,7 @@ class Game:
                                 self.box_stack.add_boxes(len(correct_letters))
                                 self.background.move_up(len(correct_letters))
                                 self.win.move_up(len(correct_letters))  # Move win.png down in sync with background
-
+                                self.water.add_water()  # Incrementally raise the water level
                                 # เพิ่มตัวอักษรของคำตอบที่ถูกต้องใหม่ลงในกล่อง
                                 self.box_stack.add_letters(correct_letters)
                                 
@@ -93,6 +95,7 @@ class Game:
                 pg.quit()
                 sys.exit()
 
+            # Draw everything
             # In main.py -> game_loop method
 
             # Update and render
@@ -113,6 +116,7 @@ class Game:
             # Draw elements
             self.background.draw()
             self.box_stack.draw()
+            self.water.draw()  # Draw the rising water
             self.win.draw()
             self.problem_box.display_problem(self.problem_letters)
             if self.input_box_visible:
