@@ -5,8 +5,8 @@ from inputbox import inputBox
 from problem import problemBox, check_text
 from background import Background
 from boxstack import BoxStack
+from win import Win
 from moving_water import Water  # Import the Water class
-from win import Win  # Import the Win class
 
 # Colors
 WHITE = (255, 255, 255)
@@ -24,8 +24,8 @@ class Game:
         self.problem_box = problemBox(self)
         self.background = Background(self)
         self.box_stack = BoxStack(self)
-        self.water = Water(self)  # Initialize water object
-        self.win = Win(self)  # Initialize the Win class
+        self.win = Win(self)
+        self.water = Water(self)  # Initialize the Water class
 
         self.active = self.input_box.active
         self.text = ''
@@ -34,6 +34,7 @@ class Game:
         self.cursor_timer = pg.time.get_ticks()
         self.problem_letters = self.problem_box.random_problem()
 
+        self.water_active = True  # Start the water effect immediately
         self.game_loop()
 
     def game_loop(self):
@@ -57,26 +58,24 @@ class Game:
                         if event.key == pg.K_RETURN:
                             user_input = self.input_box.text
                             print("User Input:", user_input)
-        
-                            # ตรวจสอบคำตอบของผู้ใช้
+
+                            # Check user's answer
                             correct_letters = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
-                        
-                            if correct_letters is not None:
-                                self.box_stack.add_boxes(len(correct_letters))
-                                self.background.move_up(len(correct_letters))
-                                self.win.move_up(len(correct_letters))  # Move win.png down in sync with background
-                                self.water.add_water()  # Incrementally raise the water level
-                                # เพิ่มตัวอักษรของคำตอบที่ถูกต้องใหม่ลงในกล่อง
-                                self.box_stack.add_letters(correct_letters)
-                                
-                                # เลื่อนกล่องลง
-                                self.box_stack.move_down(80)
 
-                            else:
-                                print("Incorrect Answer: Background will not move.")
-                                self.box_stack.move_down(80)
+                            # Move stack and background regardless of correctness
+                            self.box_stack.add_boxes(1)
+                            self.background.move_up(1)
+                            self.win.move_up(1)
+
+                            # Increment water level on every answer submission
+                            if self.water_active:
+                                self.water.add_water()
+
+                            # Add letters and move down regardless of correctness
+                            self.box_stack.add_letters(correct_letters if correct_letters else [])
+                            self.box_stack.move_down(80)
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
@@ -95,11 +94,11 @@ class Game:
                 pg.quit()
                 sys.exit()
 
-            # Draw everything
-            # In main.py -> game_loop method
+            # Update water if active
+            if self.water_active:
+                self.water.update()
 
-            # Update and render
-
+            # Check for win condition
             if self.win.update(self.box_stack.get_character_rect()):
                 # Display "YOU WIN" message if collision detected
                 self.window.fill(WHITE)
@@ -109,14 +108,18 @@ class Game:
                 self.window.blit(text, text_rect)
                 pg.time.delay(1000)
                 pg.display.update()
-                pg.time.delay(2000)  # Display the message for 2 seconds
+                pg.time.delay(2000)
                 pg.quit()
                 sys.exit()
 
             # Draw elements
             self.background.draw()
             self.box_stack.draw()
-            self.water.draw()  # Draw the rising water
+
+            # Draw the water effect
+            if self.water_active:
+                self.water.draw()
+
             self.win.draw()
             self.problem_box.display_problem(self.problem_letters)
             if self.input_box_visible:
@@ -124,10 +127,9 @@ class Game:
                 if self.cursor_visible and self.active:
                     self.input_box.draw_cursor()
 
-            
-
+            # Update display and control frame rate
             pg.display.update()
-            clock.tick(60)  # Limit FPS for smooth scrolling
+            clock.tick(60)
 
 # Start the game
 if __name__ == "__main__":
