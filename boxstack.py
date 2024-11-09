@@ -46,6 +46,15 @@ class BoxStack:
         for _ in range(count):
             new_y = self.stack_positions[0] - self.box_height
             self.stack_positions.insert(0, new_y)
+            
+    # In BoxStack class
+    def get_character_top(self):
+        """Return the y-coordinate of the character's top edge for collision detection."""
+        if self.stack_positions:
+            # Character's top is positioned on the topmost box in the stack
+            return self.stack_positions[0] + self.character_y_offset - 120 # Adjust for character positioning
+        return None
+
 
     def draw(self):
         x_center = (self.game_instance.width - self.box_width) // 2

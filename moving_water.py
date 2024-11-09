@@ -22,6 +22,12 @@ class Water:
         """Slide the water image upwards smoothly towards the target position."""
         if self.y_position > self.target_y_position:
             self.y_position -= self.slide_speed  # Adjust this value for a smoother or faster rise
+            
+    # In moving_water.py
+    def get_top(self):
+        """Return the current top y-position of the water for collision detection."""
+        return self.y_position
+
 
     def draw(self):
         """Draw the water image with a sliding effect."""
