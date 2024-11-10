@@ -1,11 +1,14 @@
 # main.py
+
 import pygame as pg
 import sys
 from inputbox import inputBox
 from problem import problemBox, check_text
 from background import Background
 from boxstack import BoxStack
-from win import Win  # Import the Win class
+from win import Win
+from moving_water import Water  # Import the Water class
+from spcword import SpecialWordActions  # Import SpecialWordActions class
 
 # Colors
 WHITE = (255, 255, 255)
@@ -23,7 +26,9 @@ class Game:
         self.problem_box = problemBox(self)
         self.background = Background(self)
         self.box_stack = BoxStack(self)
-        self.win = Win(self)  # Initialize the Win class
+        self.win = Win(self)
+        self.water = Water(self)  # Initialize the Water class
+        self.special_word_actions = SpecialWordActions(self)  # Initialize SpecialWordActions
 
         self.active = self.input_box.active
         self.text = ''
@@ -31,6 +36,9 @@ class Game:
         self.cursor_visible = False
         self.cursor_timer = pg.time.get_ticks()
         self.problem_letters = self.problem_box.random_problem()
+
+        self.water_active = True  # Start the water effect immediately
+        self.game_over = False  # Track game-over state
 
         self.game_loop()
 
@@ -43,38 +51,42 @@ class Game:
                     pg.quit()
                     sys.exit()
 
-                if event.type == pg.MOUSEBUTTONDOWN:
+                if event.type == pg.MOUSEBUTTONDOWN and not self.game_over:
                     if self.input_box.input_box.collidepoint(event.pos):
                         self.active = not self.active
                     else:
                         self.active = False
                     self.color = self.input_box.color_active if self.active else self.input_box.color_inactive
 
-                if event.type == pg.KEYDOWN:
+                if event.type == pg.KEYDOWN and not self.game_over:
                     if self.active:
                         if event.key == pg.K_RETURN:
                             user_input = self.input_box.text
                             print("User Input:", user_input)
-        
+
                             # ตรวจสอบคำตอบของผู้ใช้
                             correct_letters = check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
-                        
+
+                            # เลื่อนระดับน้ำทุกครั้งที่ผู้ใช้กรอกคำตอบ
+                            if self.water_active:
+                                self.water.add_water()
+
                             if correct_letters is not None:
+                                # เพิ่มกล่องข้อความถ้าตอบถูก
                                 self.box_stack.add_boxes(len(correct_letters))
                                 self.background.move_up(len(correct_letters))
-                                self.win.move_up(len(correct_letters))  # Move win.png down in sync with background
-
-                                # เพิ่มตัวอักษรของคำตอบที่ถูกต้องใหม่ลงในกล่อง
+                                self.win.move_up(len(correct_letters))
                                 self.box_stack.add_letters(correct_letters)
-                                
-                                # เลื่อนกล่องลง
-                                self.box_stack.move_down(80)
-
                             else:
                                 print("Incorrect Answer: Background will not move.")
-                                self.box_stack.move_down(80)
+
+                            # เลื่อนกล่องลงทุกครั้ง
+                            self.box_stack.move_down()
+
+                            # ตรวจสอบคำพิเศษ
+                            self.special_word_actions.trigger_action(user_input.lower())  # เรียกใช้ action
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
@@ -82,37 +94,48 @@ class Game:
                             self.input_box.text += event.unicode
 
             # Change cursor visibility
-            if self.active:
+            if self.active and not self.game_over:
                 if pg.time.get_ticks() - self.cursor_timer > 500:
                     self.cursor_visible = not self.cursor_visible
                     self.cursor_timer = pg.time.get_ticks()
 
-            # Update and render
-            if self.background.update():  # Gradually scroll the background
-                print("Game Over: Background reached the top!")
-                pg.quit()
-                sys.exit()
+            # Update and render game elements if not game over
+            if not self.game_over:
+                # Check for collision between water and character
+                character_top = self.box_stack.get_character_top()
+                if character_top is not None and self.water.get_top() <= character_top:
+                    print("Game Over: Water reached the character!")
+                    self.game_over = True
 
-            # In main.py -> game_loop method
+                # Update background position each frame
+                self.background.update()
 
-            # Update and render
+                # Update water if active
+                if self.water_active:
+                    self.water.update()
 
-            if self.win.update(self.box_stack.get_character_rect()):
-                # Display "YOU WIN" message if collision detected
-                self.window.fill(WHITE)
-                font = pg.font.Font(None, 74)
-                text = font.render("YOU WIN", True, BLACK)
-                text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
-                self.window.blit(text, text_rect)
-                pg.time.delay(1000)
-                pg.display.update()
-                pg.time.delay(2000)  # Display the message for 2 seconds
-                pg.quit()
-                sys.exit()
+                # Check for collision between water and character
+                if self.water.get_top() <= self.box_stack.get_character_top():
+                    print("Game Over: Water reached the character!")
+                    self.game_over = True
+
+                # Check for win condition
+                if self.win.update(self.box_stack.get_character_rect()):
+                    # Display "YOU WIN" message if collision detected
+                    self.window.fill(WHITE)
+                    font = pg.font.Font(None, 74)
+                    text = font.render("YOU WIN", True, BLACK)
+                    text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
+                    self.window.blit(text, text_rect)
+                    pg.display.update()
+                    pg.time.delay(2000)
+                    self.game_over = True
 
             # Draw elements
             self.background.draw()
             self.box_stack.draw()
+            if self.water_active:
+                self.water.draw()
             self.win.draw()
             self.problem_box.display_problem(self.problem_letters)
             if self.input_box_visible:
@@ -120,10 +143,20 @@ class Game:
                 if self.cursor_visible and self.active:
                     self.input_box.draw_cursor()
 
-            
+            # Draw special word image if active
+            self.special_word_actions.draw()
 
+            # Display "Game Over" message if game is over
+            if self.game_over:
+                font = pg.font.Font(None, 74)
+                text = font.render("GAME OVER", True, BLACK)
+                text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
+                self.window.blit(text, text_rect)
+                pg.display.update()
+
+            # Update display and control frame rate
             pg.display.update()
-            clock.tick(60)  # Limit FPS for smooth scrolling
+            clock.tick(60)
 
 # Start the game
 if __name__ == "__main__":
