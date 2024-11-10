@@ -100,6 +100,9 @@ class Game:
                     print("Game Over: Water reached the character!")
                     self.game_over = True
 
+                # Update background position each frame
+                self.background.update()  # <- Added call to update background position
+
                 # Update water if active
                 if self.water_active:
                     self.water.update()
