@@ -1,3 +1,4 @@
+# boxstack.py
 import pygame as pg
 import os
 
@@ -26,6 +27,10 @@ class BoxStack:
         # Store images of letters for each position
         self.letter_images = []
 
+        # Timer for adding boxes one by one
+        self.box_timer = pg.time.get_ticks()
+        self.pending_boxes = 0  # Number of boxes waiting to be added
+
     def add_letters(self, letters):
         """Add new letter images from a list of text without removing old letters."""
         for letter in reversed(letters):
@@ -41,13 +46,9 @@ class BoxStack:
             self.stack_positions[i] += distance
 
     def add_boxes(self, count):
-        # Move boxes down and add new boxes
-        self.stack_positions = [y + 80 for y in self.stack_positions]
-        for _ in range(count):
-            new_y = self.stack_positions[0] - self.box_height
-            self.stack_positions.insert(0, new_y)
-            
-    # In BoxStack class
+        """Set the number of boxes to be added gradually, one at a time."""
+        self.pending_boxes += count  # Increase the pending box count
+
     def get_character_top(self):
         """Return the y-coordinate of the character's top edge for collision detection."""
         if self.stack_positions:
@@ -55,9 +56,17 @@ class BoxStack:
             return self.stack_positions[0] + self.character_y_offset - 120 # Adjust for character positioning
         return None
 
-
     def draw(self):
         x_center = (self.game_instance.width - self.box_width) // 2
+        
+        # Add a new box every 0.5 seconds if there are pending boxes
+        current_time = pg.time.get_ticks()
+        if self.pending_boxes > 0 and current_time - self.box_timer >= 1000:
+            new_y = self.stack_positions[0] - self.box_height
+            self.stack_positions.insert(0, new_y)  # Insert a new box at the top
+            self.pending_boxes -= 1  # Decrease the pending box count
+            self.box_timer = current_time  # Reset the timer
+
         for i, y in enumerate(self.stack_positions):
             # Draw box
             self.game_instance.window.blit(self.box_img, (x_center, y))
