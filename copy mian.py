@@ -138,13 +138,17 @@ class Game:
                 self.water.draw()
             self.win.draw()
             self.problem_box.display_problem(self.problem_letters)
+
+            # วาดภาพพิเศษที่ตำแหน่งด้านบนของตัวละคร
+            if not self.game_over:
+                character_top_y = self.box_stack.get_character_top()
+                if character_top_y is not None:
+                    self.special_word_actions.draw(character_top_y)  # ส่ง character_top_y
+                    
             if self.input_box_visible:
                 self.input_box.draw_input_box()
                 if self.cursor_visible and self.active:
                     self.input_box.draw_cursor()
-
-            # Draw special word image if active
-            self.special_word_actions.draw()
 
             # Display "Game Over" message if game is over
             if self.game_over:
