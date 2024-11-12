@@ -120,9 +120,11 @@ class Game:
                     text = font.render("YOU WIN", True, BLACK)
                     text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
                     self.window.blit(text, text_rect)
+                    pg.time.delay(1500)
                     pg.display.update()
                     pg.time.delay(2000)
-                    self.game_over = True
+                    pg.quit()
+                    
 
             # Draw elements
             self.background.draw()

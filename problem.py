@@ -7,6 +7,9 @@ from rapidfuzz import process
 df = pd.read_excel(r'data/dictionary.xlsx', sheet_name='dictionary')
 letters = "abcdefghijklmnopqrstuvwxyz"
 
+# สร้าง column_map สำหรับตัวอักษรตั้งแต่ a ถึง z
+column_map = {chr(i): chr(i) for i in range(ord('a'), ord('z') + 1)}
+
 class problemBox:
     def __init__(self, game_instance):
         self.game_instance = game_instance
@@ -36,12 +39,17 @@ class problemBox:
 def check_text(problem, text):
     """Check if the user input matches the problem criteria."""
     text = text.lower()
-    match = process.extractOne(text, df.key)
-    
-    if match and match[1] == 100.00 and all(letter in text for letter in problem):
-        print("Correct")
-        score = len(text)  # Increment score based on the length of the text
-        return list(text)
+
+    if all(char in letters for char in text) and text != "":
+        # ดึงตัวอักษรแรกของคำ และค้นหาใน dictionary mapping
+        first_char = text[0]
+        column = column_map.get(first_char, 'a')  # ตั้งค่า default เป็น 'a' หากไม่มีการแมป
+        match = process.extractOne(text, df[column])
+
+        if match and match[1] == 100.00 and all(letter in text for letter in problem):
+            print("Correct")
+            score = len(text)  # Increment score based on the length of the text
+            return list(text)
     else:
         print("Incorrect")
         score = 0
