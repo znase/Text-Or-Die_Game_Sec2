@@ -48,7 +48,7 @@ class SpecialWordActions:
             x = self.game_instance.width // 2 - self.current_image.get_width() // 2
             
             # กำหนดตำแหน่ง Y ให้อยู่ด้านบนตัวละคร
-            y = character_y_position - self.current_image.get_height() + 150  # เลื่อนขึ้นเหนือหัวตัวละคร 10 px
+            y = character_y_position - self.current_image.get_height() + 140  # เลื่อนขึ้นเหนือหัวตัวละคร 10 px
 
             # วาดภาพบนหน้าจอ
             self.game_instance.window.blit(self.current_image, (x, y))

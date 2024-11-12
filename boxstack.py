@@ -41,7 +41,7 @@ class BoxStack:
             scaled_letter_img = pg.transform.scale(letter_img, (self.box_width-40, self.box_height))
             self.letter_images.insert(0, scaled_letter_img)
 
-    def move_down(self, distance=80):
+    def move_down(self, distance=120):
         for i in range(len(self.stack_positions)):
             self.stack_positions[i] += distance
 
@@ -49,17 +49,8 @@ class BoxStack:
         """Set the number of boxes to be added gradually, one at a time."""
         self.pending_boxes += count  # Increase the pending box count
 
-    def get_character_top(self):
-        """Return the y-coordinate of the character's top edge for collision detection."""
-        if self.stack_positions:
-            # Character's top is positioned on the topmost box in the stack
-            return self.stack_positions[0] + self.character_y_offset - 120 # Adjust for character positioning
-        return None
-
-    def draw(self):
-        x_center = (self.game_instance.width - self.box_width) // 2
-        
-        # Add a new box every 0.5 seconds if there are pending boxes
+    def update(self):
+        """Update and gradually add pending boxes. Return True when all boxes are added."""
         current_time = pg.time.get_ticks()
         if self.pending_boxes > 0 and current_time - self.box_timer >= 1000:
             new_y = self.stack_positions[0] - self.box_height
@@ -67,6 +58,19 @@ class BoxStack:
             self.pending_boxes -= 1  # Decrease the pending box count
             self.box_timer = current_time  # Reset the timer
 
+        # Return True when no more boxes are waiting to be added
+        return self.pending_boxes == 0
+
+    def get_character_top(self):
+        """Return the y-coordinate of the character's top edge for collision detection."""
+        if self.stack_positions:
+            # Character's top is positioned on the topmost box in the stack
+            return self.stack_positions[0] + self.character_y_offset - 120  # Adjust for character positioning
+        return None
+
+    def draw(self):
+        x_center = (self.game_instance.width - self.box_width) // 2
+        
         for i, y in enumerate(self.stack_positions):
             # Draw box
             self.game_instance.window.blit(self.box_img, (x_center, y))

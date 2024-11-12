@@ -6,7 +6,7 @@ class Background:
         self.game_instance = game_instance
         self.bg_img = pg.image.load(r"assets/bg.jpg")  # Load background image
         self.bg_y = self.game_instance.height - self.bg_img.get_height()  # Start at the bottom
-        self.pixel_per_char = 20  # Pixels to move up per character
+        self.pixel_per_char = 40  # Pixels to move up per character
         self.target_y = self.bg_y  # Target position for the background
 
     def move_up(self, char_count):
@@ -20,9 +20,8 @@ class Background:
             self.bg_y += 1.5  # Adjust this for slower or faster scrolling
 
         # Stop scrolling if the background reaches the top
-        if self.bg_y >= 0:
-            self.bg_y = 0
-            return True  # Stop the game when reaching the top
+        if self.bg_y >= self.target_y:
+            return True  # Animation complete
         return False
 
     def draw(self):
