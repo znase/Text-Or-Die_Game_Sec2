@@ -18,7 +18,7 @@ class Win:
 
     def move_up(self, char_count):
         """Set a new target position based on the number of correct characters."""
-        move_distance = char_count * 20
+        move_distance = char_count * 40
         self.target_y += move_distance
 
     def update(self, character_rect):
