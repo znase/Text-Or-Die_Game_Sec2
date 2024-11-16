@@ -31,6 +31,7 @@ class Game:
 
         self.active = self.input_box.active
         self.input_box_visible = True
+        self.moveup = False
         self.game_over = False
         self.cursor_visible = False
         self.cursor_timer = pg.time.get_ticks()
@@ -74,6 +75,7 @@ class Game:
                             if correct_letters is not None:
                                 self.box_stack.add_boxes(len(correct_letters))
                                 self.background.move_up(len(correct_letters))
+                                self.moveup = True
                                 self.win.move_up(len(correct_letters))
                                 self.box_stack.add_letters(correct_letters)
                             else:
@@ -105,6 +107,7 @@ class Game:
 
                 if self.animations_complete:
                     self.input_box_visible = True  # Show input box when animations are done
+                    self.moveup = False
 
                 # Game over or win conditions
                 if self.win.update(self.box_stack.get_character_rect()):
