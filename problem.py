@@ -24,33 +24,34 @@ class problemBox:
         """Generate a random letter problem."""
         return random.sample(letters, 2)
 
-    def display_problem(self, letters):
-        """Render the problem text with a background image."""
-        # Center the background image on the screen
-        bg_x = (self.game_instance.width - self.bg_image.get_width()) // 2
-        bg_y = (self.game_instance.height // 2 - 340)  # Adjust position as needed
-        self.window.blit(self.bg_image, (bg_x, bg_y))
+    def display_problem(self, letters, input_box_visible):
+        """Render the problem text with a background image, only if the input box is visible."""
+        if input_box_visible:
+            # Center the background image on the screen
+            bg_x = (self.game_instance.width - self.bg_image.get_width()) // 2
+            bg_y = (self.game_instance.height // 2 - 340)  # Adjust position as needed
+            self.window.blit(self.bg_image, (bg_x, bg_y))
 
-        # Render and display the problem text
-        text_surface = self.font.render(f"Input a word with letters '{letters[0].upper()}' and '{letters[1].upper()}'", True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(self.game_instance.width // 2, self.game_instance.height // 2 - 300))
-        self.window.blit(text_surface, text_rect)
+            # Render and display the problem text
+            text_surface = self.font.render(f"Input a word with letters '{letters[0].upper()}' and '{letters[1].upper()}'", True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.game_instance.width // 2, self.game_instance.height // 2 - 300))
+            self.window.blit(text_surface, text_rect)
 
-def check_text(problem, text):
-    """Check if the user input matches the problem criteria."""
-    text = text.lower()
+    def check_text(self, problem, text):
+        """Check if the user input matches the problem criteria."""
+        text = text.lower()
 
-    if all(char in letters for char in text) and text != "":
-        # ดึงตัวอักษรแรกของคำ และค้นหาใน dictionary mapping
-        first_char = text[0]
-        column = column_map.get(first_char, 'a')  # ตั้งค่า default เป็น 'a' หากไม่มีการแมป
-        match = process.extractOne(text, df[column])
+        if all(char in letters for char in text) and text != "":
+            # ดึงตัวอักษรแรกของคำ และค้นหาใน dictionary mapping
+            first_char = text[0]
+            column = column_map.get(first_char, 'a')  # ตั้งค่า default เป็น 'a' หากไม่มีการแมป
+            match = process.extractOne(text, df[column])
 
-        if match and match[1] == 100.00 and all(letter in text for letter in problem):
-            print("Correct")
-            score = len(text)  # Increment score based on the length of the text
-            return list(text)
-    else:
-        print("Incorrect")
-        score = 0
-        return None
+            if match and match[1] == 100.00 and all(letter in text for letter in problem):
+                print("Correct")
+                score = len(text)  # Increment score based on the length of the text
+                return list(text)
+        else:
+            print("Incorrect")
+            score = 0
+            return None

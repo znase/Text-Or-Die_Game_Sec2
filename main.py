@@ -2,7 +2,7 @@
 import pygame as pg
 import sys
 from inputbox import inputBox
-from problem import problemBox, check_text
+from problem import problemBox
 from background import Background
 from boxstack import BoxStack
 from win import Win
@@ -61,7 +61,7 @@ class Game:
                     if self.active and self.input_box_visible:
                         if event.key == pg.K_RETURN:
                             user_input = self.input_box.text
-                            correct_letters = check_text(self.problem_letters, user_input)
+                            correct_letters = self.problem_box.check_text(self.problem_letters, user_input)
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
 
@@ -111,11 +111,15 @@ class Game:
 
                 # Game over or win conditions
                 if self.win.update(self.box_stack.get_character_rect()):
+                    pg.time.delay(1000)
                     self.display_message("YOU WIN")
+                    pg.time.delay(2000)
                     self.game_over = True
 
                 if self.water.get_top() <= self.box_stack.get_character_top():
+                    pg.time.delay(1000)
                     self.display_message("GAME OVER")
+                    pg.time.delay(2000)
                     self.game_over = True
 
             # Draw game elements
@@ -124,13 +128,13 @@ class Game:
             if self.water_active:
                 self.water.draw()
             self.win.draw()
-            self.problem_box.display_problem(self.problem_letters)
+            self.problem_box.display_problem(self.problem_letters, self.input_box_visible)
 
-            # วาดภาพพิเศษที่ตำแหน่งด้านบนของตัวละคร
+            # Draw special word actions
             if not self.game_over:
                 character_top_y = self.box_stack.get_character_top()
                 if character_top_y is not None:
-                    self.special_word_actions.draw(character_top_y)  # ส่ง character_top_y
+                    self.special_word_actions.draw(character_top_y)  # Send character_top_y
 
             if self.input_box_visible:
                 self.input_box.draw_input_box()
