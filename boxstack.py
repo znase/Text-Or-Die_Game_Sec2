@@ -55,8 +55,9 @@ class BoxStack:
         else:
             for i in range(len(self.stack_positions)):
                 self.stack_positions[i] += distance
-        
         round += 1
+        
+        
 
     def add_boxes(self, count):
         """Set the number of boxes to be added gradually, one at a time."""
@@ -78,6 +79,8 @@ class BoxStack:
         """Return the y-coordinate of the character's top edge for collision detection."""
         if self.stack_positions:
             return self.stack_positions[0] + self.character_y_offset - 120
+        else :
+           return  
         return None
 
     def draw(self):

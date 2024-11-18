@@ -11,7 +11,7 @@ class Water:
         # Set initial position to show only the wave section at the bottom
         self.y_position = self.game_instance.height - 400  # Adjust this value based on the wave height
         self.target_y_position = self.y_position
-        self.rise_amount = 5  # Amount to rise per answer submission
+        self.rise_amount = 10  # Amount to rise per answer submission
         self.slide_speed = 0.5  # Speed of sliding up the image
 
     def add_water(self):

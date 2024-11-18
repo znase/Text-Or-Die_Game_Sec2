@@ -1,4 +1,3 @@
-# main.py
 import pygame as pg
 import sys
 from inputbox import inputBox
@@ -7,7 +6,8 @@ from background import Background
 from boxstack import BoxStack
 from win import Win
 from moving_water import Water
-from spcword import SpecialWordActions  # Import SpecialWordActions class
+from spcword import SpecialWordActions
+from minimap import Minimap  # Import the Minimap class
 
 # Colors
 WHITE = (255, 255, 255)
@@ -21,17 +21,19 @@ class Game:
         self.window = pg.display.set_mode((self.width, self.height))
 
         # Initialize components
+        self.moveup = False  # Initially moving up
+        self.movedown = False  # Initially not moving down
         self.input_box = inputBox(self)
         self.problem_box = problemBox(self)
         self.background = Background(self)
         self.box_stack = BoxStack(self)
         self.win = Win(self)
         self.water = Water(self)
-        self.special_word_actions = SpecialWordActions(self)  # Initialize SpecialWordActions
+        self.special_word_actions = SpecialWordActions(self)
+        self.minimap = Minimap(self, self.box_stack)  # Initialize Minimap with reference to box_stack
 
         self.active = self.input_box.active
         self.input_box_visible = True
-        self.moveup = False
         self.game_over = False
         self.cursor_visible = False
         self.cursor_timer = pg.time.get_ticks()
@@ -73,18 +75,21 @@ class Game:
                                 self.water.add_water()
 
                             if correct_letters is not None:
-                                self.box_stack.add_boxes(len(correct_letters))
-                                self.background.move_up(len(correct_letters))
+                                characters_moved = len(correct_letters)
+                                self.box_stack.add_boxes(characters_moved)
+                                self.background.move_up(characters_moved)
                                 self.moveup = True
-                                self.win.move_up(len(correct_letters))
+                                self.win.move_up(characters_moved)
                                 self.box_stack.add_letters(correct_letters)
+                                  # Updated line: Pass movedown here
                             else:
+                                self.movedown = True  # Answer is incorrect, move marker down
+                                self.moveup = False
                                 print("Incorrect Answer: Background will not move.")
-
+                                #self.minimap.update( self.moveup, self.movedown, characters_moved)  # Updated line: Pass movedown here
+                            self.minimap.update(characters_moved, self.moveup, self.movedown)
                             self.box_stack.move_down()
-
-                            # ตรวจสอบคำพิเศษและเรียก action
-                            self.special_word_actions.trigger_action(user_input.lower())  # เรียกใช้ action
+                            self.special_word_actions.trigger_action(user_input.lower())
 
                         elif event.key == pg.K_BACKSPACE:
                             self.input_box.text = self.input_box.text[:-1]
@@ -106,7 +111,7 @@ class Game:
                 self.animations_complete = background_done and boxstack_done and water_done
 
                 if self.animations_complete:
-                    self.input_box_visible = True  # Show input box when animations are done
+                    self.input_box_visible = True
                     self.moveup = False
 
                 # Game over or win conditions
@@ -128,13 +133,14 @@ class Game:
             if self.water_active:
                 self.water.draw()
             self.win.draw()
+            self.minimap.draw()  # Draw the minimap
             self.problem_box.display_problem(self.problem_letters, self.input_box_visible)
-
+            
             # Draw special word actions
             if not self.game_over:
                 character_top_y = self.box_stack.get_character_top()
                 if character_top_y is not None:
-                    self.special_word_actions.draw(character_top_y)  # Send character_top_y
+                    self.special_word_actions.draw(character_top_y)
 
             if self.input_box_visible:
                 self.input_box.draw_input_box()
@@ -155,7 +161,6 @@ class Game:
         pg.display.update()
         pg.time.delay(2000)
 
-        
 # Start the game
 if __name__ == "__main__":
     game = Game()
