@@ -52,7 +52,6 @@ class BoxStack:
                 self.stack_positions[i] += distance
         self.round += 1  # เพิ่มรอบในตัวแปรภายใน
 
-
     def add_boxes(self, count):
         """กำหนดจำนวนกล่องที่ต้องเพิ่มแบบทีละหนึ่ง"""
         self.pending_boxes += count  # เพิ่มจำนวนกล่องที่รอการเพิ่ม
@@ -65,7 +64,6 @@ class BoxStack:
             self.stack_positions.insert(0, new_y)  # เพิ่มกล่องใหม่ที่ตำแหน่งบนสุดของ stack
             self.pending_boxes -= 1  # ลดจำนวนกล่องที่รอการเพิ่ม
             self.box_timer = current_time  # รีเซ็ตเวลา
-
         return self.pending_boxes == 0  # คืนค่า True หากไม่มีกล่องรอการเพิ่ม
 
     def get_character_top(self):
