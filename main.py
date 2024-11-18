@@ -21,8 +21,8 @@ class Game:
         self.window = pg.display.set_mode((self.width, self.height))
 
         # Initialize components
-        self.moveup = False  # Initially moving up
-        self.movedown = False  # Initially not moving down
+        self.moveup = False
+        self.movedown = False
         self.input_box = inputBox(self)
         self.problem_box = problemBox(self)
         self.background = Background(self)
@@ -30,7 +30,7 @@ class Game:
         self.win = Win(self)
         self.water = Water(self)
         self.special_word_actions = SpecialWordActions(self)
-        self.minimap = Minimap(self, self.box_stack)  # Initialize Minimap with reference to box_stack
+        self.minimap = Minimap(self, self.box_stack)
 
         self.active = self.input_box.active
         self.input_box_visible = True
@@ -41,7 +41,30 @@ class Game:
 
         self.water_active = True
         self.animations_complete = True
+
+        # แสดงหน้า Start Screen ก่อนเริ่มเกม
+        self.start_screen()
         self.game_loop()
+
+    def start_screen(self):
+        """Display the Start Screen with full-screen background image."""
+        # โหลดภาพพื้นหลังสำหรับหน้า Start Screen
+        start_bg = pg.image.load("assets/bag.png").convert()
+        start_bg = pg.transform.scale(start_bg, (self.width, self.height))
+
+        while True:
+            # วาดภาพพื้นหลังแบบเต็มหน้าจอ
+            self.window.blit(start_bg, (0, 0))
+            pg.display.update()
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+
+                # เมื่อผู้เล่นคลิกเมาส์ที่ใดก็ได้ จะเข้าสู่เกม
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    return  # ออกจากฟังก์ชัน start_screen() และเข้าสู่ game_loop()
 
     def game_loop(self):
         clock = pg.time.Clock()
