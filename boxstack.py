@@ -2,6 +2,8 @@ import pygame as pg
 import gif_pygame
 import os
 
+round = 1
+
 class BoxStack:
     def __init__(self, game_instance):
         """Initialize BoxStack with fixed scaling for the box and character images."""
@@ -34,6 +36,7 @@ class BoxStack:
         initial_y = self.game_instance.height - self.box_height - 200
         self.stack_positions.append(initial_y)
 
+
     def add_letters(self, letters):
         """Add new letter images from a list of text without removing old letters."""
         for letter in reversed(letters):
@@ -45,8 +48,15 @@ class BoxStack:
             self.letter_images.insert(0, scaled_letter_img)
 
     def move_down(self, distance=120):
-        for i in range(len(self.stack_positions)):
-            self.stack_positions[i] += distance
+        #print(globalround)
+        global round
+        if round == 1 :
+            pass
+        else:
+            for i in range(len(self.stack_positions)):
+                self.stack_positions[i] += distance
+        
+        round += 1
 
     def add_boxes(self, count):
         """Set the number of boxes to be added gradually, one at a time."""
