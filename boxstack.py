@@ -2,8 +2,6 @@ import pygame as pg
 import gif_pygame
 import os
 
-round = 1  # ตัวแปรรอบของเกม
-
 class BoxStack:
     def __init__(self, game_instance):
         """สร้างคลาส BoxStack พร้อมการตั้งค่าเริ่มต้นของกล่องและตัวละคร"""
