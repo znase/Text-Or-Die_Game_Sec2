@@ -1,4 +1,3 @@
-# spcword.py
 import pygame as pg
 
 class SpecialWordActions:
