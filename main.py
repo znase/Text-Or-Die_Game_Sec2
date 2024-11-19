@@ -7,9 +7,9 @@ from boxstack import BoxStack
 from win import Win
 from moving_water import Water
 from spcword import SpecialWordActions
-from minimap import Minimap  # Import the Minimap class
+from minimap import Minimap  # นำเข้าคลาส Minimap
 
-# Colors
+# สีต่างๆ
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
@@ -20,7 +20,7 @@ class Game:
         self.height = 768
         self.window = pg.display.set_mode((self.width, self.height))
 
-        # Initialize components
+        # กำหนดค่าเริ่มต้นของส่วนประกอบต่างๆ
         self.moveup = False
         self.movedown = False
         self.input_box = inputBox(self)
@@ -30,7 +30,7 @@ class Game:
         self.win = Win(self)
         self.water = Water(self)
         self.special_word_actions = SpecialWordActions(self)
-        self.minimap = Minimap(self, self.box_stack)
+        self.minimap = Minimap(self, self.box_stack)  # สร้าง Minimap
 
         self.active = self.input_box.active
         self.input_box_visible = True
@@ -47,7 +47,7 @@ class Game:
         self.game_loop()
 
     def start_screen(self):
-        """Display the Start Screen with full-screen background image."""
+        """แสดงหน้า Start Screen ด้วยภาพพื้นหลังเต็มหน้าจอ"""
         # โหลดภาพพื้นหลังสำหรับหน้า Start Screen
         start_bg = pg.image.load("assets/bag.png").convert()
         start_bg = pg.transform.scale(start_bg, (self.width, self.height))
@@ -90,7 +90,7 @@ class Game:
                             self.input_box.text = ''
                             self.problem_letters = self.problem_box.random_problem()
 
-                            # Actions when the input box is submitted
+                            # การกระทำเมื่อกรอกข้อความใน input box
                             self.input_box_visible = False
                             self.animations_complete = False
 
@@ -104,13 +104,13 @@ class Game:
                                 self.moveup = True
                                 self.win.move_up(characters_moved)
                                 self.box_stack.add_letters(correct_letters)
-                                  # Updated line: Pass movedown here
+                                  # อัปเดตบรรทัด: ส่งค่าตัวแปร movedown
                             else:
-                                self.movedown = True  # Answer is incorrect, move marker down
+                                self.movedown = True  # คำตอบไม่ถูกต้อง ให้ย้ายเครื่องหมายลง
                                 self.moveup = False
                                 print("Incorrect Answer: Background will not move.")
-                                #self.minimap.update( self.moveup, self.movedown, characters_moved)  # Updated line: Pass movedown here
-                            self.minimap.update(characters_moved, self.moveup, self.movedown)
+                                #self.minimap.update(self.moveup, self.movedown, characters_moved)  # อัปเดตบรรทัด: ส่งค่าตัวแปร movedown
+                            self.minimap.update(characters_moved, self.moveup, self.movedown)  # อัปเดต Minimap
                             self.box_stack.move_down()
                             self.special_word_actions.trigger_action(user_input.lower())
 
@@ -119,13 +119,13 @@ class Game:
                         else:
                             self.input_box.text += event.unicode
 
-            # Toggle cursor visibility
+            # สลับการแสดง/ซ่อนของตัวชี้ตำแหน่ง
             if self.active and not self.game_over:
                 if pg.time.get_ticks() - self.cursor_timer > 500:
                     self.cursor_visible = not self.cursor_visible
                     self.cursor_timer = pg.time.get_ticks()
 
-            # Update game elements if not game over
+            # อัปเดตส่วนประกอบต่างๆ ของเกม ถ้ายังไม่จบเกม
             if not self.game_over:
                 background_done = self.background.update()
                 boxstack_done = self.box_stack.update()
@@ -137,7 +137,7 @@ class Game:
                     self.input_box_visible = True
                     self.moveup = False
 
-                # Game over or win conditions
+                # ตรวจสอบเงื่อนไขการชนะหรือแพ้
                 if self.win.update(self.box_stack.get_character_rect()):
                     pg.time.delay(1000)
                     self.display_message("YOU WIN")
@@ -150,16 +150,16 @@ class Game:
                     pg.time.delay(2000)
                     self.game_over = True
 
-            # Draw game elements
+            # วาดส่วนประกอบต่างๆ ของเกม
             self.background.draw()
             self.box_stack.draw()
             if self.water_active:
                 self.water.draw()
             self.win.draw()
-            self.minimap.draw()  # Draw the minimap
+            self.minimap.draw()  # วาด Minimap
             self.problem_box.display_problem(self.problem_letters, self.input_box_visible)
             
-            # Draw special word actions
+            # วาดการกระทำของคำพิเศษ
             if not self.game_over:
                 character_top_y = self.box_stack.get_character_top()
                 if character_top_y is not None:
@@ -170,12 +170,12 @@ class Game:
                 if self.cursor_visible and self.active:
                     self.input_box.draw_cursor()
 
-            # Update display
+            # อัปเดตหน้าจอ
             pg.display.update()
             clock.tick(60)
 
     def display_message(self, text):
-        """Display a message in the center of the screen."""
+        """แสดงข้อความที่กลางหน้าจอ"""
         self.window.fill(WHITE)
         font = pg.font.Font(None, 74)
         message = font.render(text, True, BLACK)
@@ -184,6 +184,6 @@ class Game:
         pg.display.update()
         pg.time.delay(2000)
 
-# Start the game
+# เริ่มเกม
 if __name__ == "__main__":
     game = Game()

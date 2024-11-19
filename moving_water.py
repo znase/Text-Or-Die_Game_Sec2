@@ -1,4 +1,3 @@
-# moving_water.py
 import pygame as pg
 
 class Water:
